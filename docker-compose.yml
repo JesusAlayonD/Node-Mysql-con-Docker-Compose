@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql # Versión más reciente de mysql
+    # restart: unless-stopped
+    env_file: ./.env  # Indico que usaré datos del .env
+    environment:  # Asigno variable de entorno desde el -env
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT
+
+  app:
+    build: .  # Mando a montar la imagen del dockerfile que se encuentra en esta carpeta
+    depends_on: # El servicio no correrá hasta que mysqldb esté activo y corriendo
+      - mysqldb
+    links: # Asigno este servicio estará vinculado con mysqldb
+      - mysqldb
+    ports: # Asigno variable de entorno desde el -env
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+
